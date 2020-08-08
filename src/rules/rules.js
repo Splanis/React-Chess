@@ -65,28 +65,28 @@ const bishopRules = (from, to, board) => {
     return false;
 };
 
-export const legalMove = (piece, from, to, board) => {
-    if (piece.color === board[to[0]][to[1]].color) return false;
-    if (JSON.stringify(from) === JSON.stringify(to)) return false;
+export const legalMove = (piece, from, to, board, playersTurn) => {
+    if (piece.color === board[to[0]][to[1]].color) return [false];
+    if (JSON.stringify(from) === JSON.stringify(to)) return [false];
 
     switch (piece.type) {
         case "pawn":
-            if (piece.color === "black" && from[0] < to[0]) return false;
-            else if (piece.color === "white" && from[0] > to[0]) return false;
+            if (piece.color === "black" && from[0] < to[0]) return [false];
+            else if (piece.color === "white" && from[0] > to[0]) return [false];
 
             if (from[1] - to[1] === 0) {
-                if (!board[to[0]][to[1]].isEmpty) return false;
+                if (!board[to[0]][to[1]].isEmpty) return [false];
 
                 if (Math.abs(from[0] - to[0]) === 1 || Math.abs(from[0] - to[0]) === 2) {
                     if (!board[from[0]][from[1]].moved) {
                         if (Math.abs(from[0] - to[0]) === 1) {
                             if (piece.color === "black") {
                                 if (board[from[0] - 1][from[1]].isEmpty) {
-                                    return true;
+                                    return [true];
                                 }
                             } else {
                                 if (board[from[0] + 1][from[1]].isEmpty) {
-                                    return true;
+                                    return [true];
                                 }
                             }
                         } else if (Math.abs(from[0] - to[0]) === 2) {
@@ -95,19 +95,19 @@ export const legalMove = (piece, from, to, board) => {
                                     board[from[0] - 2][from[1]].isEmpty &&
                                     board[from[0] - 1][from[1]].isEmpty
                                 ) {
-                                    return true;
+                                    return [true];
                                 }
                             } else {
                                 if (
                                     board[from[0] + 2][from[1]].isEmpty &&
                                     board[from[0] + 1][from[1]].isEmpty
                                 ) {
-                                    return true;
+                                    return [true];
                                 }
                             }
                         }
                     } else if (Math.abs(from[0] - to[0]) === 1) {
-                        return true;
+                        return [true];
                     }
                 }
             } else if (
@@ -115,44 +115,59 @@ export const legalMove = (piece, from, to, board) => {
                 Math.abs(from[0] - to[0]) === 1 &&
                 !board[to[0]][to[1]].isEmpty
             ) {
-                return true;
+                return [true];
             }
 
-            return false;
+            return [false];
         case "bishop":
-            return bishopRules(from, to, board);
+            return [bishopRules(from, to, board)];
         case "knight":
             if (
                 (Math.abs(from[0] - to[0]) === 2 && Math.abs(from[1] - to[1]) === 1) ||
                 (Math.abs(from[0] - to[0]) === 1 && Math.abs(from[1] - to[1]) === 2)
             ) {
-                return true;
+                return [true];
             }
-            return false;
+            return [false];
         case "rook":
-            return rookRules(from, to, board);
+            return [rookRules(from, to, board)];
         case "king":
-            // if (
-            //     !board[from[0]][from[1]].moved &&
-            //     board[from[0]][from[1] + 1].isEmpty &&
-            //     board[from[0]][from[1] + 2].isEmpty &&
-            //     !board[from[0]][from[1] + 3].moved
-            // ) {
-            //     return "castling";
-            // }
+            if (
+                !board[from[0]][from[1]].moved &&
+                to[1] - from[1] === 2 &&
+                from[0] === to[0] &&
+                board[from[0]][from[1] + 1].isEmpty &&
+                board[from[0]][from[1] + 2].isEmpty &&
+                !board[from[0]][from[1] + 3].moved &&
+                !isCheck(board, playersTurn)
+            ) {
+                return [true, "castlingRight"];
+            }
+            if (
+                !board[from[0]][from[1]].moved &&
+                from[1] - to[1] === 2 &&
+                from[0] === to[0] &&
+                board[from[0]][from[1] - 1].isEmpty &&
+                board[from[0]][from[1] - 2].isEmpty &&
+                board[from[0]][from[1] - 3].isEmpty &&
+                !board[from[0]][from[1] - 4].moved &&
+                !isCheck(board, playersTurn)
+            ) {
+                return [true, "castlingLeft"];
+            }
             if (
                 (Math.abs(from[0] - to[0]) === 1 && Math.abs(from[1] - to[1]) === 1) ||
                 (Math.abs(from[0] - to[0]) === 1 && Math.abs(from[1] - to[1]) === 0) ||
                 (Math.abs(from[0] - to[0]) === 0 && Math.abs(from[1] - to[1]) === 1) ||
                 (Math.abs(from[0] - to[0]) === 0 && Math.abs(from[1] - to[1]) === 0)
             )
-                return true;
+                return [true];
 
-            return false;
+            return [false];
         case "queen":
-            return rookRules(from, to, board) || bishopRules(from, to, board);
+            return [rookRules(from, to, board) || bishopRules(from, to, board)];
         default:
-            return false;
+            return [false];
     }
 };
 
@@ -171,7 +186,7 @@ export const isCheck = (board, playersTurn) => {
         }
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                if (legalMove(board[i][j], [i, j], kingPosition, board)) {
+                if (legalMove(board[i][j], [i, j], kingPosition, board, playersTurn)[0]) {
                     return true;
                 }
             }
@@ -187,7 +202,7 @@ export const isCheck = (board, playersTurn) => {
         }
         for (let i = 7; i >= 0; i--) {
             for (let j = 0; j < 8; j++) {
-                if (legalMove(board[i][j], [i, j], kingPosition, board)) {
+                if (legalMove(board[i][j], [i, j], kingPosition, board, playersTurn)[0]) {
                     return true;
                 }
             }
@@ -204,13 +219,13 @@ export const isCheckMate = (board, playersTurn) => {
                 if (board[i][j].color === "white") {
                     for (let k = 0; k < 8; k++) {
                         for (let l = 0; l < 8; l++) {
-                            if (legalMove(board[i][j], [i, j], [k, l], board)) {
+                            if (legalMove(board[i][j], [i, j], [k, l], board, playersTurn)[0]) {
                                 const tmpBoard = JSON.parse(JSON.stringify(board));
                                 tmpBoard[k][l] = tmpBoard[i][j];
                                 tmpBoard[k][l].moved = true;
                                 tmpBoard[i][j] = { isEmpty: true };
 
-                                if (!isCheck(tmpBoard, playersTurn)) return true;
+                                if (!isCheck(tmpBoard, playersTurn)) return false;
                             }
                         }
                     }
@@ -223,13 +238,13 @@ export const isCheckMate = (board, playersTurn) => {
                 if (board[i][j].color === "black") {
                     for (let k = 0; k < 8; k++) {
                         for (let l = 0; l < 8; l++) {
-                            if (legalMove(board[i][j], [i, j], [k, l], board)) {
+                            if (legalMove(board[i][j], [i, j], [k, l], board, playersTurn)[0]) {
                                 const tmpBoard = JSON.parse(JSON.stringify(board));
                                 tmpBoard[k][l] = tmpBoard[i][j];
                                 tmpBoard[k][l].moved = true;
                                 tmpBoard[i][j] = { isEmpty: true };
 
-                                if (!isCheck(tmpBoard, playersTurn)) return true;
+                                if (!isCheck(tmpBoard, playersTurn)) return false;
                             }
                         }
                     }
@@ -238,5 +253,5 @@ export const isCheckMate = (board, playersTurn) => {
         }
     }
 
-    return false;
+    return true;
 };
