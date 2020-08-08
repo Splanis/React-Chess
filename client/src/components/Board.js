@@ -32,7 +32,7 @@ const findLegalMoves = (moving, board, playersTurn) => {
 
 const Board = () => {
     const [state, dispatch] = useContext(ChessContext);
-    const { board, moving, promotion, playersTurn } = state;
+    const { board, moving, promotion, playersTurn } = state.game;
 
     useEffect(() => {
         if (moving) {

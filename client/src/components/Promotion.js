@@ -8,9 +8,7 @@ import styled from "styled-components";
 
 const Promotion = () => {
     const [state, dispatch] = useContext(ChessContext);
-    const { promotion, board } = state;
-
-    console.log(promotion);
+    const { promotion, board } = state.game;
 
     const handleSelection = (e) => {
         const tmpBoard = JSON.parse(JSON.stringify(board));

@@ -3,7 +3,7 @@ import * as actions from "./actionTypes";
 export const chessReducer = (state, { type, payload }) => {
     switch (type) {
         case actions.SET_LEGAL_MOVES:
-            return { ...state, legalMoves: payload };
+            return { ...state, game: { ...state.game, legalMoves: payload } };
         case actions.MOVE_PIECE:
             const { from, to, board, symbol } = payload;
 
@@ -17,24 +17,40 @@ export const chessReducer = (state, { type, payload }) => {
 
             const move = [fromColStr + fromRow, toColStr + toRow];
 
-            return { ...state, board, moving: null, moves: [...state.moves, { move, symbol }] };
+            return {
+                ...state,
+                game: {
+                    ...state.game,
+                    board,
+                    moving: null,
+                    moves: [...state.game.moves, { move, symbol }],
+                },
+            };
         case actions.ADD_PROMOTION:
-            return { ...state, promotion: payload };
+            return { ...state, game: { ...state.game, promotion: payload } };
         case actions.PROMOTE_PAWN:
             return {
                 ...state,
-                board: payload,
-                promotion: {
-                    position: [],
-                    color: "",
+                game: {
+                    ...state.game,
+                    board: payload,
+                    promotion: {
+                        position: [],
+                        color: "",
+                    },
                 },
             };
         case actions.SET_MOVING:
-            return { ...state, moving: payload };
+            return { ...state, game: { ...state.game, moving: payload } };
         case actions.TOGGLE_PLAYERS_TURN:
-            return { ...state, playersTurn: payload };
+            return { ...state, game: { ...state.game, playersTurn: payload } };
         case actions.SET_CHECKMATE:
-            return { ...state, winner: payload === "white" ? "black" : "white" };
+            return {
+                ...state,
+                game: { ...state.game, winner: payload === "white" ? "black" : "white" },
+            };
+        case actions.USER_AUTHENTICATED:
+            return { ...state, user: payload };
         default:
             break;
     }

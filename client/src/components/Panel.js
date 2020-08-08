@@ -5,7 +5,7 @@ import { ChessContext } from "../context/store";
 const Panel = () => {
     const [state, dispatch] = useContext(ChessContext);
 
-    const { moves, playersTurn, winner } = state;
+    const { moves, playersTurn, winner } = state.game;
 
     return (
         <div style={{ width: 310, height: 900, border: "5px solid black", display: "flex-column" }}>

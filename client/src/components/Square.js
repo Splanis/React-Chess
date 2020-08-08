@@ -8,7 +8,7 @@ import * as actions from "../context/actionTypes";
 import styled from "styled-components";
 
 const Square = ({ position, state, dispatch }) => {
-    const { moving, board, playersTurn, isPromotion, legalMoves } = state;
+    const { moving, board, playersTurn, isPromotion, legalMoves } = state.game;
 
     const handleMovePiece = () => {
         if (moving) {

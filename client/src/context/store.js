@@ -4,17 +4,20 @@ import { chessReducer } from "./reducers";
 import { initialBoard } from "./initialBoard";
 
 const initialState = {
-    board: initialBoard,
-    moving: null,
-    legalMoves: [],
-    moves: [],
-    playersTurn: "white",
-    promotion: {
-        position: [],
-        color: "",
+    user: { Authorization: null },
+    game: {
+        board: initialBoard,
+        moving: null,
+        legalMoves: [],
+        moves: [],
+        playersTurn: "white",
+        promotion: {
+            position: [],
+            color: "",
+        },
+        checkMate: false,
+        winner: null,
     },
-    checkMate: false,
-    winner: null,
 };
 
 export const ChessContext = createContext([]);

@@ -5,7 +5,7 @@ import * as actions from "../context/actionTypes";
 import styled from "styled-components";
 
 const Piece = ({ isPromotion, position, piece, dispatch, state }) => {
-    const { playersTurn, moving } = state;
+    const { playersTurn, moving } = state.game;
 
     const handleMove = () => {
         if (JSON.stringify(position) === JSON.stringify(moving)) {
