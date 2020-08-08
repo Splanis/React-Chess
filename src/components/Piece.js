@@ -9,7 +9,7 @@ const Piece = ({ isPromotion, position, piece, dispatch, state }) => {
 
     const handleMove = () => {
         if (JSON.stringify(position) === JSON.stringify(moving)) {
-            dispatch({ type: actions.CLEAR_MOVING });
+            dispatch({ type: actions.SET_MOVING, payload: null });
             return;
         }
 
@@ -20,7 +20,7 @@ const Piece = ({ isPromotion, position, piece, dispatch, state }) => {
         )
             return;
 
-        dispatch({ type: actions.ADD_MOVING, payload: position });
+        dispatch({ type: actions.SET_MOVING, payload: position });
     };
 
     return (

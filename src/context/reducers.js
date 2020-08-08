@@ -2,10 +2,8 @@ import * as actions from "./actionTypes";
 
 export const chessReducer = (state, { type, payload }) => {
     switch (type) {
-        case actions.ADD_POSSIBLE_MOVES:
-            return { ...state, possibleMoves: payload };
-        case actions.CLEAR_POSSIBLE_MOVES:
-            return { ...state, possibleMoves: [] };
+        case actions.SET_LEGAL_MOVES:
+            return { ...state, legalMoves: payload };
         case actions.MOVE_PIECE:
             const { from, to, board, symbol } = payload;
 
@@ -31,10 +29,8 @@ export const chessReducer = (state, { type, payload }) => {
                     color: "",
                 },
             };
-        case actions.ADD_MOVING:
+        case actions.SET_MOVING:
             return { ...state, moving: payload };
-        case actions.CLEAR_MOVING:
-            return { ...state, moving: null };
         case actions.TOGGLE_PLAYERS_TURN:
             return { ...state, playersTurn: payload };
         case actions.SET_CHECKMATE:

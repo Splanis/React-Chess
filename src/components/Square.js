@@ -1,13 +1,14 @@
 import React from "react";
 
 import Piece from "./Piece";
-import { legalMove, isCheck } from "./rules";
+import { legalMove, isCheck } from "../rules/rules";
+import { promotionSelections } from "../context/initialBoard";
 import * as actions from "../context/actionTypes";
 
 import styled from "styled-components";
 
 const Square = ({ position, state, dispatch }) => {
-    const { moving, board, playersTurn, isPromotion, possibleMoves } = state;
+    const { moving, board, playersTurn, isPromotion, legalMoves } = state;
 
     const handleMovePiece = () => {
         if (moving) {
@@ -15,11 +16,20 @@ const Square = ({ position, state, dispatch }) => {
 
             const piece = board[moving[0]][moving[1]];
 
-            if (legalMove(piece, moving, position, board)) {
+            if (legalMove(piece, moving, position, board, playersTurn)[0]) {
                 const tmpBoard = JSON.parse(JSON.stringify(board));
                 tmpBoard[position[0]][position[1]] = piece;
                 piece.moved = true;
                 tmpBoard[moving[0]][moving[1]] = { isEmpty: true };
+
+                if (legalMove(piece, moving, position, board, playersTurn)[1] === "castlingRight") {
+                    tmpBoard[moving[0]][7] = { isEmpty: true };
+                    tmpBoard[moving[0]][moving[1] + 1] = promotionSelections.rook[playersTurn];
+                }
+                if (legalMove(piece, moving, position, board, playersTurn)[1] === "castlingLeft") {
+                    tmpBoard[moving[0]][0] = { isEmpty: true };
+                    tmpBoard[moving[0]][moving[1] - 1] = promotionSelections.rook[playersTurn];
+                }
 
                 if (!isCheck(tmpBoard, playersTurn)) {
                     dispatch({
@@ -36,16 +46,14 @@ const Square = ({ position, state, dispatch }) => {
                         ? dispatch({ type: actions.TOGGLE_PLAYERS_TURN, payload: "black" })
                         : dispatch({ type: actions.TOGGLE_PLAYERS_TURN, payload: "white" });
                 } else {
-                    dispatch({ type: actions.CLEAR_MOVING });
+                    dispatch({ type: actions.SET_MOVING, payload: null });
                 }
             }
         }
     };
 
-    const isPossibleMove = () => {
-        return possibleMoves.find(
-            (square) => square[0] === position[0] && square[1] === position[1]
-        );
+    const isLegalMove = () => {
+        return legalMoves.find((square) => square[0] === position[0] && square[1] === position[1]);
     };
 
     return (
@@ -67,9 +75,7 @@ const Square = ({ position, state, dispatch }) => {
                 dispatch={dispatch}
                 isPromotion={isPromotion}
             />
-            <PossibleMoveCircle
-                style={{ display: isPossibleMove() ? "flex" : "none" }}
-            ></PossibleMoveCircle>
+            <LegalMoveCircle style={{ display: isLegalMove() ? "flex" : "none" }}></LegalMoveCircle>
         </SquareStyled>
     );
 };
@@ -81,7 +87,7 @@ const SquareStyled = styled.div`
     position: relative;
 `;
 
-const PossibleMoveCircle = styled.span`
+const LegalMoveCircle = styled.span`
     background: grey;
     padding: 16px;
     border-radius: 50%;
