@@ -6,7 +6,7 @@ import { initialBoard } from "./initialBoard";
 const initialState = {
     board: initialBoard,
     moving: null,
-    possibleMoves: [],
+    legalMoves: [],
     moves: [],
     playersTurn: "white",
     promotion: {
