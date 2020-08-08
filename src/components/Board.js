@@ -1,7 +1,6 @@
 import React, { useEffect, useContext } from "react";
 
 import Square from "./Square";
-import Promotion from "./Promotion";
 import { ChessContext } from "../context/store";
 import { legalMove, isCheckMate, isCheck } from "../rules/rules";
 import * as actions from "../context/actionTypes";
@@ -38,9 +37,9 @@ const Board = () => {
     useEffect(() => {
         if (moving) {
             const moves = findLegalMoves(moving, board, playersTurn);
-            dispatch({ type: actions.ADD_POSSIBLE_MOVES, payload: moves });
+            dispatch({ type: actions.SET_LEGAL_MOVES, payload: moves });
         } else {
-            dispatch({ type: actions.CLEAR_POSSIBLE_MOVES });
+            dispatch({ type: actions.SET_LEGAL_MOVES, payload: [] });
         }
     }, [moving]);
 
@@ -109,8 +108,6 @@ const Board = () => {
                     return <BoardCoordinatesStyled key={char}>{char}</BoardCoordinatesStyled>;
                 })}
             </CoordinatesStyled>
-
-            {promotion.color && <Promotion state={state} dispatch={dispatch} />}
         </GameStyled>
     );
 };

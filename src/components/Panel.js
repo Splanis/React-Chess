@@ -8,7 +8,7 @@ const Panel = () => {
     const { moves, playersTurn, winner } = state;
 
     return (
-        <div style={{ width: 250, height: 900, border: "5px solid black", display: "flex-column" }}>
+        <div style={{ width: 310, height: 900, border: "5px solid black", display: "flex-column" }}>
             <h1>It's {playersTurn[0].toUpperCase() + playersTurn.substr(1)}'s Turn</h1>
             <div style={{ overflowY: "scroll", height: 850 }}>
                 {moves.map((move) => {
