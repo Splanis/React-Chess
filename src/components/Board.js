@@ -3,7 +3,7 @@ import React, { useEffect, useContext } from "react";
 import Square from "./Square";
 import Promotion from "./Promotion";
 import { ChessContext } from "../context/store";
-import { legalMove, isCheckMate, isCheck } from "./rules";
+import { legalMove, isCheckMate, isCheck } from "../rules/rules";
 import * as actions from "../context/actionTypes";
 
 import styled from "styled-components";
@@ -11,24 +11,24 @@ import styled from "styled-components";
 const boardChars = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const boardNums = ["8", "7", "6", "5", "4", "3", "2", "1"];
 
-const findPossibleMoves = (moving, board, playersTurn) => {
+const findLegalMoves = (moving, board, playersTurn) => {
     const piece = board[moving[0]][moving[1]];
-    let possibleMoves = [];
+    let legalMoves = [];
 
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            if (legalMove(piece, moving, [i, j], board)) {
+            if (legalMove(piece, moving, [i, j], board)[0]) {
                 const tmpBoard = JSON.parse(JSON.stringify(board));
                 tmpBoard[i][j] = tmpBoard[moving[0]][moving[1]];
                 tmpBoard[i][j].moved = true;
                 tmpBoard[moving[0]][moving[1]] = { isEmpty: true };
 
-                if (!isCheck(tmpBoard, playersTurn)) possibleMoves.push([i, j]);
+                if (!isCheck(tmpBoard, playersTurn)) legalMoves.push([i, j]);
             }
         }
     }
 
-    return possibleMoves;
+    return legalMoves;
 };
 
 const Board = () => {
@@ -37,7 +37,7 @@ const Board = () => {
 
     useEffect(() => {
         if (moving) {
-            const moves = findPossibleMoves(moving, board, playersTurn);
+            const moves = findLegalMoves(moving, board, playersTurn);
             dispatch({ type: actions.ADD_POSSIBLE_MOVES, payload: moves });
         } else {
             dispatch({ type: actions.CLEAR_POSSIBLE_MOVES });
@@ -60,24 +60,25 @@ const Board = () => {
             });
         }
 
-        if (!isCheckMate(board, playersTurn))
+        if (isCheckMate(board, playersTurn)) {
             dispatch({
                 type: actions.SET_CHECKMATE,
                 payload: playersTurn,
             });
+        }
     }, [board]);
 
     return (
         <GameStyled>
             <CoordinatesStyled area="top">
                 {boardChars.map((char) => {
-                    return <BoardCoordinatesStyled>{char}</BoardCoordinatesStyled>;
+                    return <BoardCoordinatesStyled key={char}>{char}</BoardCoordinatesStyled>;
                 })}
             </CoordinatesStyled>
 
             <CoordinatesStyled area="left" aside="true">
                 {boardNums.map((num) => {
-                    return <BoardCoordinatesStyled>{num}</BoardCoordinatesStyled>;
+                    return <BoardCoordinatesStyled key={num}>{num}</BoardCoordinatesStyled>;
                 })}
             </CoordinatesStyled>
 
@@ -99,13 +100,13 @@ const Board = () => {
 
             <CoordinatesStyled area="right" aside="true">
                 {boardNums.map((num) => {
-                    return <BoardCoordinatesStyled>{num}</BoardCoordinatesStyled>;
+                    return <BoardCoordinatesStyled key={num}>{num}</BoardCoordinatesStyled>;
                 })}
             </CoordinatesStyled>
 
             <CoordinatesStyled area="bot">
                 {boardChars.map((char) => {
-                    return <BoardCoordinatesStyled>{char}</BoardCoordinatesStyled>;
+                    return <BoardCoordinatesStyled key={char}>{char}</BoardCoordinatesStyled>;
                 })}
             </CoordinatesStyled>
 
