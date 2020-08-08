@@ -38,7 +38,7 @@ export const chessReducer = (state, { type, payload }) => {
         case actions.TOGGLE_PLAYERS_TURN:
             return { ...state, playersTurn: payload };
         case actions.SET_CHECKMATE:
-            return { ...state, checkMate: true, winner: payload === "white" ? "black" : "white" };
+            return { ...state, winner: payload === "white" ? "black" : "white" };
         default:
             break;
     }

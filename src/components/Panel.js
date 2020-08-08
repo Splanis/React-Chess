@@ -5,7 +5,7 @@ import { ChessContext } from "../context/store";
 const Panel = () => {
     const [state, dispatch] = useContext(ChessContext);
 
-    const { moves, playersTurn, checkMate, winner } = state;
+    const { moves, playersTurn, winner } = state;
 
     return (
         <div style={{ width: 250, height: 900, border: "5px solid black", display: "flex-column" }}>
@@ -18,9 +18,7 @@ const Panel = () => {
                         </div>
                     );
                 })}
-                {checkMate && (
-                    <div>Checkmate! {winner[0].toUpperCase() + winner.substr(1)} wins.</div>
-                )}
+                {winner && <div>Checkmate! {winner[0].toUpperCase() + winner.substr(1)} wins.</div>}
             </div>
         </div>
     );
