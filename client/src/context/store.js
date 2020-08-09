@@ -1,10 +1,11 @@
-import React, { useReducer, createContext } from "react";
+import React, { useReducer, createContext, useEffect } from "react";
 
 import { chessReducer } from "./reducers";
 import { initialBoard } from "./initialBoard";
+import * as actions from "./actionTypes";
 
 const initialState = {
-    user: { Authorization: null },
+    user: JSON.parse(localStorage.getItem("user")),
     game: {
         board: initialBoard,
         moving: null,
@@ -24,6 +25,10 @@ export const ChessContext = createContext([]);
 
 export const ChessProvider = (props) => {
     const [state, dispatch] = useReducer(chessReducer, initialState);
+
+    useEffect(() => {
+        localStorage.setItem("user", JSON.stringify(state.user));
+    }, [state.user]);
 
     return (
         <ChessContext.Provider value={[state, dispatch]}>{props.children}</ChessContext.Provider>
