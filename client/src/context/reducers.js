@@ -51,6 +51,8 @@ export const chessReducer = (state, { type, payload }) => {
             };
         case actions.USER_AUTHENTICATED:
             return { ...state, user: payload };
+        case actions.USER_LOGOUT:
+            return { ...state, user: { Authorization: null } };
         default:
             break;
     }

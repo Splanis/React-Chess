@@ -1,11 +1,16 @@
-import React from 'react'
+import { useContext, useEffect } from "react";
+
+import { ChessContext } from "../context/store";
+import * as actions from "../context/actionTypes";
 
 const Logout = () => {
-    return (
-        <div>
-            
-        </div>
-    )
-}
+    const [state, dispatch] = useContext(ChessContext);
 
-export default Logout
+    useEffect(() => {
+        dispatch({ type: actions.USER_LOGOUT });
+    }, []);
+
+    return null;
+};
+
+export default Logout;
